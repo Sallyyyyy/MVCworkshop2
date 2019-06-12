@@ -2,87 +2,126 @@
 @{
     ViewBag.Title = "Index";
 }
-
+<center>
 <h2>查詢書籍</h2>
-@using (Html.BeginForm("Index", "Library", FormMethod.Post, new { id = "Form1" }))
-{
-<div class="form-horizontal">
-    <div class="form-group">
-        @Html.LabelFor(model => model.BookId, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.BookId, new { @class = "form-control" })
+    <div class="container">
+    @using (Html.BeginForm("Index", "Library", FormMethod.Post, new { id = "BookForm" }))
+    {
+        <div class="form-horizontal">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BookName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.BookName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.BookClassName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.BookClassName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.BookKeeper, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.BookKeeper, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.BookStatus, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.BookStatus, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-10">
+                    <input type="submit" value="查詢" class="k-button k-primary btn-add-book" id="search">
+                    <input type="button" value="清除" class="k-button k-primary btn-add-book">
+                    <input type="button" value="新增" class="k-button k-primary btn-add-book"><br>
+                </div>
+            </div>
+            <div id="grid">
+            </div>
         </div>
+    }
     </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.BookClassName, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.BookClassName, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.BookKeeper, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.BookKeeper, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.BookStatus, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.BookStatus, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-2">
-        </div>
-        <div class="col-md-10">
-            <input type="submit" value="查詢" />
-            <input type="date" id="bought_datepicker" name="bought_datepicker" data-bind="value: BookBoughtDate" style="width:100%" required />
-            @Html.ActionLink("新增員工", "InsertEmployee")
-            @Html.ActionLink("清除", "Index")
-        </div>
-    </div>
-    <div id="grid">
-    </div>
-</div>
-}
+</center>
 <script type="text/javascript">
-    var bookCategoryList = [
-    { text: "資料庫", value: "database", src: "image/database.jpg" },
-    { text: "網際網路", value: "internet", src: "image/internet.jpg" },
-    { text: "應用系統整合", value: "system", src: "image/system.jpg" },
-    { text: "家庭保健", value: "home", src: "image/home.jpg" },
-    { text: "語言", value: "language", src: "image/language.jpg" }
-    ];
     $(document).ready(function () {
-        //ajax
-        var postBody = {
-            "BookId": "1"
-        }
+         kendo.culture("zh-TW");
+        //grid
         $.ajax({
             type: "POST",
             url: "/Library/Index",
-            data: postBody,
             dataType: "json",
             success: function (response) {
-                console.log(response);
-                console.log("su");
+                console.log("in index");
+                $("#grid").kendoGrid({
+                    dataSource: response,
+                    height: 550,
+                    pageable: true,
+                    //groupable: true,
+                    //sortable: true,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },
+                    columns: [
+                        {
+                            field: "BookClassName",
+                            title: "書籍類別",
+                        }, {
+                            field: "BookName",
+                            title: "書籍名稱",
+                            width: "250px"
+                        }, {
+                            field: "BoughtDate",
+                            title: "購買日期",
+                            format: "{0: yyyy-MM-dd}",
+                            width: "200px"
+                        }, {
+                            field: "BookStatus",
+                            title: "書籍狀態",
+                            width: "100px"
+                        }, {
+                            field: "BookKeeper",
+                            title: "保管人"
+                        },
+                    { command: { text: "刪除", click: showDeleteDetail }, title: " ", width: "130px" }]
+                    });
             },
             error: function (error) {
                 console.log(error);
-                console.log("er");
             }
         });
-        kendo.culture("zh-TW");
-        $("#bought_datepicker").kendoDatePicker({
-        format: "yyyy-MM-dd",
-        parseFormats: ["yyyy/MM/dd", "yyyyMMdd"],
-        dateInput: true
+        //search
+        $("#search").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Library/Index",
+                data: $("#BookForm").serialize(),
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    console.log("In search");
+                    var grid = $('#Grid').data("kendoGrid");
+                    grid.setDataSource(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
         });
-        $("#book_class").kendoDropDownList({ 
-        dataTextField: "text",
-        dataValueField: "value",
-        dataSource: bookCategoryList
-        });
-       
+            
+            $("#bought_datepicker").kendoDatePicker({
+            format: "yyyy-MM-dd",
+            parseFormats: ["yyyy/MM/dd", "yyyyMMdd"],
+            dateInput: true
+            });
+        function showDeleteDetail() {
+            console.log("showDeleteDetail");
+        }
     });
 </script>

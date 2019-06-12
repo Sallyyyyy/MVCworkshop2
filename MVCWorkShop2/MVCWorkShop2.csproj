@@ -745,6 +745,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\LBBooks.cs" />
     <Compile Include="Models\LBSearchArg.cs" />
     <Compile Include="Models\LBService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

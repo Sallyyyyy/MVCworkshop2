@@ -15,11 +15,11 @@ namespace MVCWorkShop2.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult Index(string viewresult)
+        public JsonResult Index(LBSearchArg viewresult)
         {
-            List<string> myStringLists = new List<string>();
-            myStringLists.Add("大家好!");
-            return this.Json(myStringLists);
+            LBService lbService = new LBService();
+            List<LBBooks> bookList = lbService.GetLibraryData(viewresult);
+            return this.Json(bookList);
         }
     }
 }
