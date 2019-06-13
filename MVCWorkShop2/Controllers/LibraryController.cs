@@ -52,7 +52,14 @@ namespace MVCWorkShop2.Controllers
             List<LBBooks> bookClassList = lbService.BookKeeperDrop();
             return this.Json(bookClassList);
         }
-        
+        [HttpPost]
+        public JsonResult Insert(LBSearchArg insertData)
+        {
+            LBService lbService = new LBService();
+            List<LBBooks> bookClassList = lbService.InsertBook(insertData);
+            return this.Json(bookClassList);
+        }
+
 
     }
 }

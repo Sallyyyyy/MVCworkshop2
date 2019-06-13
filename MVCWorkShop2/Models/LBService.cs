@@ -69,6 +69,37 @@ namespace MVCWorkShop2.Models
             }
             return this.MapBookDataToList(dt);
         }
+        //新增書籍
+        public List<LBBooks> InsertBook(LBSearchArg viewresult)
+        {
+            DataTable dt = new DataTable();
+            string sql = @" INSERT INTO dbo.BOOK_DATA
+						 (
+							 BOOK_NAME,BOOK_AUTHOR,BOOK_PULISHER,BOOK_NOTE, 
+                             BOOK_BOUGHT_DATE,BOOK_CLASS_ID
+						 )
+						VALUES
+						(
+							 @BOOK_NAME,@BOOK_AUTHOR,@BOOK_PULISHER,@BOOK_NOTE, 
+                             @BOOK_BOUGHT_DATE,@BOOK_CLASS_ID
+						)
+						Select SCOPE_IDENTITY()";
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@BOOK_NAME", viewresult.BookName));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_AUTHOR", viewresult.BookAuthor));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_PULISHER", viewresult.Pubilsher));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_NOTE", viewresult.BookIntroduce));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_BOUGHT_DATE", viewresult.BoughtDate));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_CLASS_ID", viewresult.BookId));
+                SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
+                sqlAdapter.Fill(dt);
+                conn.Close();
+            }
+            return this.MapBookDataToList(dt);
+        }
         //取得下拉式資料
         //類別名稱
         public List<LBBooks> BookClassDrop()
@@ -178,5 +209,6 @@ namespace MVCWorkShop2.Models
             }
             return result;
         }
+        
     }
 }

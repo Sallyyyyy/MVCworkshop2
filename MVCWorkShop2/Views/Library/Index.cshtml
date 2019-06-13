@@ -37,16 +37,57 @@
                     @Html.TextBoxFor(model => model.BookStatus, new { @class = "form-control", id = "bookStatusDrop" })
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-2">
-                </div>
-            </div>
-            <div id="grid">
-            </div>
-            <div id="showInsert">
-            </div>
+
         </div>
     }
+<div id="showInsert">
+    @using (Html.BeginForm("Insert", "Library", FormMethod.Post, new { id = "InsertForm" ,style="display: none;"}))
+    {
+    <div class="form-horizontal">
+        @Html.LabelFor(model => model.BookId, htmlAttributes: new { @class = "control-label col-md-2", style = "display:none;" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BookName, new { @class = "form-control", id = "inBookName",required = "必填"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookAuthor, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BookAuthor, new { @class = "form-control", id = "bookAuthor" ,required = "必填"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Pubilsher, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Pubilsher, new { @class = "form-control", id = "pubilsher" ,required = "必填"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookIntroduce, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BookIntroduce, new { @class = "form-control", id = "bookIntroduce" ,required = "必填"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BoughtDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BoughtDate, new { @class = "form-control", id = "boughtDate",required = "必填" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookClassName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BookClassName, new { @class = "form-control", id = "insertClassDrop" ,required = "必填" })
+            </div>
+        </div>
+        <center><input type="submit" value="新增" class="k-button k-primary btn-add-book" id="insert_btn"></center>
+    </div>
+    }
+</div>
+    <div id="grid">
+    </div>
+    
 </div>
 </center>
 <script type="text/javascript">
@@ -103,8 +144,6 @@
                 data: $("#BookForm").serialize(),
                 dataType: "json",
                 success: function (response) {
-                    console.log(response);
-                    console.log("In search");
                     var grid = $('#grid').data("kendoGrid");
                     grid.setDataSource(response);
                 },
@@ -121,7 +160,7 @@
                 data: $("#BookForm").serialize(),
                 dataType: "json",
                 success: function (response) {
-                    $("#classNameDrop").kendoDropDownList({
+                    $("#classNameDrop,#insertClassDrop").kendoDropDownList({
                         dataSource: response,
                         dataTextField: "BookClassName",
                         dataValueField: "BookClassName",
@@ -173,22 +212,50 @@
             alert("表單清除");
             $("#BookForm")[0].reset();
         });
-        //新增
-        var wnd;
+        //新增視窗  
         $('#add_book').click(function () {
-            wnd.center().open();
-        });
-        wnd = $("#showInsert")
-            .kendoWindow({
+            $("#showInsert").kendoWindow({
                 actions: ["Pin", "Maximize", "Minimize", "Close"],
                 title: "新增書籍",
-                modal: true,
-                //visible: false,
                 resizable: false,
-                width: 700,
-                height: 700
-                }).data("kendoWindow");
-
+                width: "700px"
+            }).data("kendoWindow").center().open();
+            $("#InsertForm").attr("style","display:block");
+        });
+        $("#boughtDate").kendoDatePicker({
+        format: "yyyy-MM-dd",
+        parseFormats: ["yyyy/MM/dd", "yyyyMMdd"],
+        dateInput: true
+         });
+        //驗證
+        var validator = $("#book_form").kendoValidator({
+          messages: {
+            required: "此欄位為必填"
+           }
+        }).data("kendoValidator");
+        //Insert
+        $("#insert_btn").click(function () {
+            if (validator.validate()) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Library/Insert",
+                    data: $("#InsertForm").serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("insert");
+                        var grid = $('#grid').data("kendoGrid");
+                        grid.setDataSource(response);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            } else {
+                alert("欄位有誤");
+            }
+            return false;
+        });
+        
         //刪除
             function showDeleteDetail() {
                 console.log("showDeleteDetail");
