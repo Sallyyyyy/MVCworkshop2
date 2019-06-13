@@ -56,8 +56,7 @@ namespace MVCWorkShop2.Controllers
         public JsonResult Insert(LBSearchArg insertData)
         {
             LBService lbService = new LBService();
-            List<LBBooks> bookClassList = lbService.InsertBook(insertData);
-            return this.Json(bookClassList);
+            return this.Json(lbService.InsertBook(insertData));
         }
 
 

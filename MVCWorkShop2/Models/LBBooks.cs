@@ -8,7 +8,8 @@ namespace MVCWorkShop2.Models
 {
     public class LBBooks
     {
-       
+        [DisplayName("書籍類別id")]
+        public string BookClassId { get; set; }
         [DisplayName("書籍類別")]
         public string BookClassName { get; set; }
         [DisplayName("書名")]

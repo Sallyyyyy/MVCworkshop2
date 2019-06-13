@@ -54,7 +54,7 @@ namespace MVCWorkShop2.Models
                                     Where (e.BOOK_NAME LIKE ('%'+@BOOK_NAME+'%') OR @BOOK_NAME='')
                                     AND (bc.BOOK_CLASS_NAME LIKE ('%'+@BOOK_CLASS_NAME+'%') OR @BOOK_CLASS_NAME='')
                                     AND (mm.USER_CNAME LIKE ('%'+@BOOK_KEEPER+'%') OR @BOOK_KEEPER='')
-                                    AND (code.CODE_NAME LIKE ('%'+@BOOK_STATUS+'%') OR @BOOK_STATUS='')";
+                                    AND (code.CODE_ID LIKE ('%'+@BOOK_STATUS+'%') OR @BOOK_STATUS='')";
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
@@ -70,42 +70,40 @@ namespace MVCWorkShop2.Models
             return this.MapBookDataToList(dt);
         }
         //新增書籍
-        public List<LBBooks> InsertBook(LBSearchArg viewresult)
+        public int InsertBook(LBSearchArg viewresult)
         {
-            DataTable dt = new DataTable();
             string sql = @" INSERT INTO dbo.BOOK_DATA
 						 (
-							 BOOK_NAME,BOOK_AUTHOR,BOOK_PULISHER,BOOK_NOTE, 
-                             BOOK_BOUGHT_DATE,BOOK_CLASS_ID
+							 BOOK_NAME,BOOK_AUTHOR,BOOK_PUBLISHER,BOOK_NOTE,BOOK_BOUGHT_DATE,BOOK_CLASS_ID,BOOK_STATUS
 						 )
 						VALUES
 						(
-							 @BOOK_NAME,@BOOK_AUTHOR,@BOOK_PULISHER,@BOOK_NOTE, 
-                             @BOOK_BOUGHT_DATE,@BOOK_CLASS_ID
-						)
-						Select SCOPE_IDENTITY()";
+							 @BOOK_NAME,@BOOK_AUTHOR,@BOOK_PUBLISHER,@BOOK_NOTE,@BOOK_BOUGHT_DATE,@BOOK_CLASS_ID,@BOOK_STATUS
+						)";
+            int Id;
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.Add(new SqlParameter("@BOOK_NAME", viewresult.BookName));
                 cmd.Parameters.Add(new SqlParameter("@BOOK_AUTHOR", viewresult.BookAuthor));
-                cmd.Parameters.Add(new SqlParameter("@BOOK_PULISHER", viewresult.Pubilsher));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_PUBLISHER", viewresult.Pubilsher));
                 cmd.Parameters.Add(new SqlParameter("@BOOK_NOTE", viewresult.BookIntroduce));
                 cmd.Parameters.Add(new SqlParameter("@BOOK_BOUGHT_DATE", viewresult.BoughtDate));
-                cmd.Parameters.Add(new SqlParameter("@BOOK_CLASS_ID", viewresult.BookId));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_CLASS_ID", viewresult.BookClassName));
+                cmd.Parameters.Add(new SqlParameter("@BOOK_STATUS", viewresult.BookStatus));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
-                sqlAdapter.Fill(dt);
+                Id = Convert.ToInt32(cmd.ExecuteScalar());
                 conn.Close();
             }
-            return this.MapBookDataToList(dt);
+            return Id;
         }
         //取得下拉式資料
         //類別名稱
         public List<LBBooks> BookClassDrop()
         {
             DataTable dt = new DataTable();
-            string sql = @"Select BOOK_CLASS_NAME
+            string sql = @"Select BOOK_CLASS_NAME,BOOK_CLASS_ID
                                 FROM dbo.BOOK_CLASS";
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
@@ -185,7 +183,8 @@ namespace MVCWorkShop2.Models
             {
                 result.Add(new LBBooks()
                 {
-                    BookClassName = row["BOOK_CLASS_NAME"].ToString()
+                    BookClassName = row["BOOK_CLASS_NAME"].ToString(),
+                    BookClassId = row["BOOK_CLASS_ID"].ToString()
                 });
             }
             return result;
