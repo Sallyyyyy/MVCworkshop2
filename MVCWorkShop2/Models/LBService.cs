@@ -15,13 +15,18 @@ namespace MVCWorkShop2.Models
             return
                 System.Configuration.ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString.ToString();
         }
-        public List<LBBooks> GetLibraryData(LBSearchArg viewresult)
+        public List<LBBooks> SearchBook(LBSearchArg viewresult)
         {
             DataTable dt = new DataTable();
             //SQL
             string sql = @"Select BOOK_CLASS_NAME,BOOK_NAME,BOOK_BOUGHT_DATE,BOOK_STATUS,BOOK_KEEPER 
-                    From dbo.BOOK_DATA,dbo.BOOK_CLASS 
-                    Where BOOK_DATA.BOOK_CLASS_ID = BOOK_CLASS.BOOK_CLASS_ID";
+                    FROM dbo.BOOK_DATA as e 
+	                  LEFT JOIN dbo.BOOK_CLASS as ctj
+	                   ON (e.BOOK_CLASS_ID = ctj.BOOK_CLASS_ID)
+                    Where (e.BOOK_NAME LIKE ('%'+@BOOK_NAME+'%') OR @BOOK_NAME='')
+                    AND (ctj.BOOK_CLASS_NAME LIKE ('%'+@BOOK_CLASS_NAME+'%') OR @BOOK_CLASS_NAME='')
+                    AND (e.BOOK_KEEPER LIKE ('%'+@BOOK_KEEPER+'%') OR @BOOK_KEEPER='')
+                    AND (e.BOOK_STATUS LIKE ('%'+@BOOK_STATUS+'%') OR @BOOK_STATUS='')";
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
@@ -34,9 +39,27 @@ namespace MVCWorkShop2.Models
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
-            return this.MapEmployeeDataToList(dt);
+            return this.MapBookDataToList(dt);
         }
-        private List<LBBooks> MapEmployeeDataToList(DataTable employeeData)
+        public List<LBBooks> GetLibraryData(LBSearchArg viewresult)
+        {
+            DataTable dt = new DataTable();
+            //SQL
+            string sql = @"Select BOOK_CLASS_NAME,BOOK_NAME,BOOK_BOUGHT_DATE,BOOK_STATUS,BOOK_KEEPER 
+                    FROM dbo.BOOK_DATA as e 
+	                  LEFT JOIN dbo.BOOK_CLASS as ctj
+	                   ON (e.BOOK_CLASS_ID = ctj.BOOK_CLASS_ID)";
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
+                sqlAdapter.Fill(dt);
+                conn.Close();
+            }
+            return this.MapBookDataToList(dt);
+        }
+        private List<LBBooks> MapBookDataToList(DataTable employeeData)
         {
             List<LBBooks> result = new List<LBBooks>();
             foreach (DataRow row in employeeData.Rows)

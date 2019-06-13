@@ -21,5 +21,12 @@ namespace MVCWorkShop2.Controllers
             List<LBBooks> bookList = lbService.GetLibraryData(viewresult);
             return this.Json(bookList);
         }
+        [HttpPost]
+        public JsonResult Search(LBSearchArg viewresult)
+        {
+            LBService lbService = new LBService();
+            List<LBBooks> bookList = lbService.SearchBook(viewresult);
+            return this.Json(bookList);
+        }
     }
 }

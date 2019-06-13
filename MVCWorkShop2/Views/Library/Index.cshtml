@@ -17,19 +17,19 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.BookClassName, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.BookClassName, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.BookClassName, new { @class = "form-control" ,id ="classNameDrop"})
                 </div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(model => model.BookKeeper, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.BookKeeper, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.BookKeeper, new { @class = "form-control",id ="bookKeeperDrop" })
                 </div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(model => model.BookStatus, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.BookStatus, new { @class = "form-control" })
+                    @Html.TextBoxFor(model => model.BookStatus, new { @class = "form-control" ,id ="bookStatusDrop"})
                 </div>
             </div>
             <div class="form-group">
@@ -60,9 +60,6 @@
                 $("#grid").kendoGrid({
                     dataSource: response,
                     height: 550,
-                    pageable: true,
-                    //groupable: true,
-                    //sortable: true,
                     pageable: {
                         refresh: true,
                         pageSizes: true,
@@ -100,21 +97,22 @@
         $("#search").click(function () {
             $.ajax({
                 type: "POST",
-                url: "/Library/Index",
+                url: "/Library/Search",
                 data: $("#BookForm").serialize(),
                 dataType: "json",
                 success: function (response) {
                     console.log(response);
                     console.log("In search");
-                    var grid = $('#Grid').data("kendoGrid");
+                    var grid = $('#grid').data("kendoGrid");
                     grid.setDataSource(response);
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+            return false;
         });
-            
+        //下拉式選單
             $("#bought_datepicker").kendoDatePicker({
             format: "yyyy-MM-dd",
             parseFormats: ["yyyy/MM/dd", "yyyyMMdd"],
