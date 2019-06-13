@@ -19,5 +19,9 @@ namespace MVCWorkShop2.Models
         public string BookStatus { get; set; }
         [DisplayName("保管人")]
         public string BookKeeper { get; set; }
+        [DisplayName("保管人名")]
+        public string BookKeeperName { get; set; }
+        [DisplayName("借閱狀態")]
+        public string BookStatusName { get; set; }
     }
 }
