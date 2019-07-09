@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
+using LB.Model;
+using LB.Dao;
+using LB.Common;
 
-namespace MVCWorkShop2.Models
+
+
+namespace LB.Dao
 {
-    //連線資料庫
-    public class LBService
+    public class LBDao : ILBDao
     {
         //取得連線字串(Web.config)
         private string GetDBConnectionString()
         {
             return
-                System.Configuration.ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString.ToString();
+                LB.Common.ConfigTool.GetDBConnectionString("DBConn");
         }
         //載入畫面時GET書籍資料放到kendoGrid
         public List<LBBooks> GetLibraryData(LBSearchArg viewresult)
@@ -40,7 +45,7 @@ namespace MVCWorkShop2.Models
             return this.MapBookDataToList(dt);
         }
         //查詢書籍
-        public List<LBBooks> SearchBook(LBSearchArg viewresult)
+        public List<LB.Model.LBBooks> SearchBook(LBSearchArg viewresult)
         {
             DataTable dt = new DataTable();
             string sql = @"Select BOOK_CLASS_NAME,BOOK_NAME,BOOK_BOUGHT_DATE,CODE_NAME,USER_CNAME 
@@ -208,6 +213,5 @@ namespace MVCWorkShop2.Models
             }
             return result;
         }
-
     }
 }

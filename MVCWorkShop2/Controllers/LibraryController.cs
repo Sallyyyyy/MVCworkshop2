@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using MVCWorkShop2.Models;
+using LB.Model;
+using LB.Service;
 
 namespace MVCWorkShop2.Controllers
 {
     public class LibraryController : Controller
     {
+        private ILBService lbService { get; set; }
         // GET: Library
         public ActionResult Index()
         {
@@ -17,7 +19,6 @@ namespace MVCWorkShop2.Controllers
         [HttpPost]
         public JsonResult Index(LBSearchArg viewresult)
         {
-            LBService lbService = new LBService();
             List<LBBooks> bookList = lbService.GetLibraryData(viewresult);
             return this.Json(bookList);
         }
@@ -25,7 +26,6 @@ namespace MVCWorkShop2.Controllers
         [HttpPost]
         public JsonResult Search(LBSearchArg viewresult)
         {
-            LBService lbService = new LBService();
             List<LBBooks> bookList = lbService.SearchBook(viewresult);
             return this.Json(bookList);
         }
@@ -33,7 +33,6 @@ namespace MVCWorkShop2.Controllers
         [HttpPost]
         public JsonResult ClassDropDown()
         {
-            LBService lbService = new LBService();
             List<LBBooks> bookClassList = lbService.BookClassDrop();
             return this.Json(bookClassList);
         }
@@ -41,21 +40,18 @@ namespace MVCWorkShop2.Controllers
         [HttpPost]
         public JsonResult StatusDropDown()
         {
-            LBService lbService = new LBService();
             List<LBBooks> bookClassList = lbService.BookStatusDrop();
             return this.Json(bookClassList);
         }
         [HttpPost]
         public JsonResult KeeperDropDown()
         {
-            LBService lbService = new LBService();
             List<LBBooks> bookClassList = lbService.BookKeeperDrop();
             return this.Json(bookClassList);
         }
         [HttpPost]
         public JsonResult Insert(LBSearchArg insertData)
         {
-            LBService lbService = new LBService();
             return this.Json(lbService.InsertBook(insertData));
         }
 
